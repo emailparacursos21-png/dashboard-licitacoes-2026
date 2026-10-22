@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Executivo | Central de Licitações 2026</title>
+  
+  <!-- Fontes & Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js para os gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- PapaParse para interpretação robusta do CSV publicado -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-indigo: #6366f1;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #8b5cf6;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .btn-refresh {
+      background-color: var(--border-color);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-refresh:hover {
+      background-color: #475569;
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    .kpi-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent-indigo);
+    }
+
+    .kpi-card.blue::after { background: var(--accent-blue); }
+    .kpi-card.green::after { background: var(--accent-green); }
+    .kpi-card.yellow::after { background: var(--accent-yellow); }
+    .kpi-card.red::after { background: var(--accent-red); }
+    .kpi-card.purple::after { background: var(--accent-purple); }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.825rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-value {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .kpi-subtext {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+    }
+
+    /* Gráficos */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+    }
+
+    .chart-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow);
+      min-height: 360px;
+    }
+
+    .chart-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* Tabela */
+    .table-section {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .table-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .table-toolbar h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .filter-input, .filter-select {
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-height: 480px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    thead th {
+      background-color: #151e2e;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody td {
+      padding: 12px 16px;
+      color: #e2e8f0;
+      vertical-align: middle;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-concluido { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge-andamento { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+    .badge-aguardando { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .badge-cancelado { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .badge-default { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="header-title">
+        <h1><i class="fa-solid fa-chart-pie" style="color: var(--accent-blue)"></i> Central de Licitações | Exercício 2026</h1>
+        <p>Monitoramento Operacional, Modalidades e Gestão de Compras Diretas</p>
+      </div>
+      <div class="header-actions">
+        <div class="live-badge">
+          <div class="pulse-dot"></div>
+          Conectado ao Google Sheets
+        </div>
+        <button class="btn-refresh" onclick="carregarDados()">
+          <i class="fa-solid fa-rotate"></i> Atualizar Agora
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-header">
+          <span>Total de Processos</span>
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
+        <div class="kpi-value" id="kpi-total">--</div>
+        <div class="kpi-subtext">Processos cadastrados</div>
+      </div>
+
+      <div class="kpi-card green">
+        <div class="kpi-header">
+          <span>Concluídos</span>
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="kpi-value" id="kpi-concluidos">--</div>
+        <div class="kpi-subtext" id="kpi-concluidos-pct">--% do total</div>
+      </div>
+
+      <div class="kpi-card yellow">
+        <div class="kpi-header">
+          <span>Em Andamento</span>
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div class="kpi-value" id="kpi-andamento">--</div>
+        <div class="kpi-subtext" id="kpi-andamento-pct">--% em tramitação</div>
+      </div>
+
+      <div class="kpi-card red">
+        <div class="kpi-header">
+          <span>Cancelados / Ajuste</span>
+          <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+        <div class="kpi-value" id="kpi-cancelados">--</div>
+        <div class="kpi-subtext" id="kpi-cancelados-pct">--% cancelados</div>
+      </div>
+
+      <div class="kpi-card purple">
+        <div class="kpi-header">
+          <span>Compras Diretas</span>
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <div class="kpi-value" id="kpi-compras-qtd">45</div>
+        <div class="kpi-subtext" id="kpi-compras-valor">Total: R$ 231.815,48</div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-chart-pie" style="color: var(--accent-indigo)"></i> Distribuição por Modalidade</h3>
+        <div class="chart-container">
+          <canvas id="chartModalidades"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-user-group" style="color: var(--accent-blue)"></i> Carga de Trabalho por Responsável</h3>
+        <div class="chart-container">
+          <canvas id="chartResponsaveis"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-building-columns" style="color: var(--accent-green)"></i> Processos por Secretaria</h3>
+        <div class="chart-container">
+          <canvas id="chartSecretarias"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de Processos -->
+    <div class="table-section">
+      <div class="table-toolbar">
+        <h3><i class="fa-solid fa-list-check" style="color: var(--accent-blue)"></i> Controle de Processos</h3>
+        <div class="filters">
+          <input type="text" id="searchTable" class="filter-input" placeholder="Buscar por objeto ou responsável..." oninput="filtrarTabela()">
+          <select id="selectStatus" class="filter-select" onchange="filtrarTabela()">
+            <option value="">Todos os Status</option>
+            <option value="CONCLUIDO">Concluído</option>
+            <option value="EM ANDAMENTO">Em Andamento</option>
+            <option value="AGUARDANDO">Aguardando</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table id="tabelaProcessos">
+          <thead>
+            <tr>
+              <th>Objeto</th>
+              <th>Modalidade</th>
+              <th>Secretaria</th>
+              <th>Responsável</th>
+              <th>Status</th>
+              <th>Observação</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaProcessosBody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">Conectando à planilha publicada...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer>
+      Prefeitura Municipal de Timóteo • Central de Licitações e Contratos • Sincronização em tempo real
+    </footer>
+  </div>
+
+  <script>
+    // URL convertida automaticamente para extração direta em CSV via PapaParse
+    const PUB_BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSW2dPRREWqOqipOS5XrnR1_4qbAD9K-mHPW_YaG9muI0VVgMbeVK0-CJH1w52mQ3taQIPic_3UfvRN/pub?output=csv';
+
+    let listaProcessos = [];
+    let chartModalidadesInstance = null;
+    let chartResponsaveisInstance = null;
+    let chartSecretariasInstance = null;
+
+    async function carregarDados() {
+      try {
+        // Adiciona timestamp para evitar cache no navegador e garantir tempo real
+        const urlComCacheBuster = `${PUB_BASE_URL}&t=${new Date().getTime()}`;
+
+        Papa.parse(urlComCacheBuster, {
+          download: true,
+          header: false,
+          skipEmptyLines: true,
+          complete: function(results) {
+            const linhas = results.data;
+            listaProcessos = [];
+
+            // Identifica dinamicamente ou percorre as linhas ignorando cabeçalho
+            for (let i = 0; i < linhas.length; i++) {
+              const col = linhas[i];
+              if (!col || col.length < 2) continue;
+
+              const objeto = (col[1] || '').trim();
+              if (!objeto || objeto.toUpperCase() === 'OBJETO') continue;
+
+              const modalidade = (col[2] || 'NÃO DEFINIDA').trim().toUpperCase();
+              const secretaria = (col[4] || 'TODAS').trim();
+              const responsavel = (col[5] || 'NÃO DEFINIDO').trim().toUpperCase();
+              const status = (col[6] || 'EM DEFINIÇÃO').trim().toUpperCase();
+              const observacao = (col[7] || '-').trim();
+
+              listaProcessos.push({ objeto, modalidade, secretaria, responsavel, status, observacao });
+            }
+
+            atualizarKPIs();
+            renderizarGraficos();
+            filtrarTabela();
+          },
+          error: function(err) {
+            console.error('Erro ao ler planilha publicada:', err);
+            document.getElementById('tabelaProcessosBody').innerHTML = `
+              <tr><td colspan="6" style="text-align: center; color: var(--accent-red); padding: 20px;">
+                Erro ao conectar na planilha publicada. Verifique se o link possui permissão pública de acesso.
+              </td></tr>`;
+          }
+        });
+      } catch (err) {
+        console.error('Falha geral:', err);
+      }
+    }
+
+    function atualizarKPIs() {
+      const total = listaProcessos.length;
+      const concluidos = listaProcessos.filter(p => p.status.includes('CONCLU')).length;
+      const andamento = listaProcessos.filter(p => p.status.includes('ANDAMENTO')).length;
+      const cancelados = listaProcessos.filter(p => p.status.includes('CANCEL')).length;
+
+      document.getElementById('kpi-total').innerText = total;
+      document.getElementById('kpi-concluidos').innerText = concluidos;
+      document.getElementById('kpi-concluidos-pct').innerText = total ? `${((concluidos / total) * 100).toFixed(1)}% do total` : '0%';
+
+      document.getElementById('kpi-andamento').innerText = andamento;
+      document.getElementById('kpi-andamento-pct').innerText = total ? `${((andamento / total) * 100).toFixed(1)}% em tramitação` : '0%';
+
+      document.getElementById('kpi-cancelados').innerText = cancelados;
+      document.getElementById('kpi-cancelados-pct').innerText = total ? `${((cancelados / total) * 100).toFixed(1)}% cancelados` : '0%';
+    }
+
+    function renderizarGraficos() {
+      // 1. Gráfico de Modalidades
+      const modMap = {};
+      listaProcessos.forEach(p => {
+        const m = p.modalidade || 'OUTRAS';
+        modMap[m] = (modMap[m] || 0) + 1;
+      });
+
+      if (chartModalidadesInstance) chartModalidadesInstance.destroy();
+      const ctxMod = document.getElementById('chartModalidades').getContext('2d');
+      chartModalidadesInstance = new Chart(ctxMod, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(modMap),
+          datasets: [{
+            data: Object.values(modMap),
+            backgroundColor: ['#38bdf8', '#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } }
+          }
+        }
+      });
+
+      // 2. Gráfico Carga de Trabalho por Responsável
+      const respMap = {};
+      listaProcessos.forEach(p => {
+        const r = p.responsavel || 'NÃO DEFINIDO';
+        respMap[r] = (respMap[r] || 0) + 1;
+      });
+
+      if (chartResponsaveisInstance) chartResponsaveisInstance.destroy();
+      const ctxResp = document.getElementById('chartResponsaveis').getContext('2d');
+      chartResponsaveisInstance = new Chart(ctxResp, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(respMap),
+          datasets: [{
+            label: 'Processos',
+            data: Object.values(respMap),
+            backgroundColor: '#38bdf8',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+          }
+        }
+      });
+
+      // 3. Gráfico Processos por Secretaria Demandante (Top 6)
+      const secMap = {};
+      listaProcessos.forEach(p => {
+        const s = (p.secretaria || 'TODAS').toUpperCase();
+        secMap[s] = (secMap[s] || 0) + 1;
+      });
+
+      const secSorted = Object.entries(secMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+      if (chartSecretariasInstance) chartSecretariasInstance.destroy();
+      const ctxSec = document.getElementById('chartSecretarias').getContext('2d');
+      chartSecretariasInstance = new Chart(ctxSec, {
+        type: 'bar',
+        data: {
+          labels: secSorted.map(item => item[0]),
+          datasets: [{
+            label: 'Processos',
+            data: secSorted.map(item => item[1]),
+            backgroundColor: '#10b981',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+            y: { ticks: { color: '#cbd5e1' }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function renderizarTabela(dados) {
+      const tbody = document.getElementById('tabelaProcessosBody');
+      tbody.innerHTML = '';
+
+      if (!dados.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 16px;">Nenhum processo localizado com os filtros selecionados.</td></tr>';
+        return;
+      }
+
+      dados.forEach(p => {
+        let badgeClass = 'badge-default';
+        if (p.status.includes('CONCLU')) badgeClass = 'badge-concluido';
+        else if (p.status.includes('ANDAMENTO')) badgeClass = 'badge-andamento';
+        else if (p.status.includes('AGUARD')) badgeClass = 'badge-aguardando';
+        else if (p.status.includes('CANCEL')) badgeClass = 'badge-cancelado';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 500;">${p.objeto}</td>
+          <td>${p.modalidade}</td>
+          <td>${p.secretaria}</td>
+          <td>${p.responsavel}</td>
+          <td><span class="badge ${badgeClass}">${p.status}</span></td>
+          <td style="color: var(--text-muted); font-size: 0.8rem;">${p.observacao}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filtrarTabela() {
+      const termo = document.getElementById('searchTable').value.toLowerCase();
+      const statusFiltro = document.getElementById('selectStatus').value;
+
+      const filtrados = listaProcessos.filter(p => {
+        const matchesTexto = p.objeto.toLowerCase().includes(termo) || 
+                             p.responsavel.toLowerCase().includes(termo) ||
+                             p.secretaria.toLowerCase().includes(termo);
+        const matchesStatus = statusFiltro === '' || p.status.includes(statusFiltro);
+        return matchesTexto && matchesStatus;
+      });
+
+      renderizarTabela(filtrados);
+    }
+
+    // Inicialização e atualização automática a cada 60 segundos
+    carregarDados();
+    setInterval(carregarDados, 60000);
+  </script>
+</body>
+</html>
