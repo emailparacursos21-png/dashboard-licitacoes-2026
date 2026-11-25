@@ -4,19 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Executivo | Central de Licitações 2026</title>
-  
-  <!-- Fontes & Ícones -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- PapaParse para carregar CSV da Web com segurança -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
   <style>
     :root {
       --bg-primary: #0a0f1d;
@@ -33,197 +25,243 @@
       --accent-purple: #a855f7;
       --accent-cyan: #06b6d4;
       --radius: 10px;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
     }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-primary); color: var(--text-main); padding: 14px 18px; min-height: 100vh; }
+    .dashboard-wrapper { width: 100%; display: flex; flex-direction: column; gap: 14px; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-primary);
-      color: var(--text-main);
-      padding: 14px 18px;
-      min-height: 100vh;
-      width: 100%;
-    }
-
-    .dashboard-wrapper {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    /* Header */
     header {
       background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: center; gap: 12px; box-shadow: var(--shadow);
     }
-
-    .header-title h1 {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      letter-spacing: -0.02em;
-    }
-
-    .header-title p {
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      margin-top: 3px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .header-title h1 { font-size: 1.35rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .header-title p { color: var(--text-muted); font-size: 0.82rem; margin-top: 3px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
     .live-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(16, 185, 129, 0.12);
-      color: var(--accent-green);
-      padding: 6px 12px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.12);
+      color: var(--accent-green); padding: 6px 12px; border-radius: 999px;
+      font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3);
     }
-
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      background-color: var(--accent-green);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-green);
-      animation: pulse 1.8s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.3; transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); }
-    }
+    .pulse-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; animation: pulse 1.8s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
     .btn-action {
-      background-color: var(--border-color);
-      color: #fff;
-      border: none;
-      padding: 7px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.2s;
+      background: var(--border-color); color: #fff; border: none; padding: 7px 14px;
+      border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
     }
+    .btn-action:hover { background: #334468; }
 
-    .btn-action:hover {
-      background-color: #334468;
-    }
-
-    /* Navegação por Abas */
+    /* Abas */
     .nav-tabs {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      padding: 6px;
-      box-shadow: var(--shadow);
-      flex-wrap: wrap;
+      display: flex; gap: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius); padding: 6px; flex-wrap: wrap;
     }
-
     .tab-btn {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid transparent;
-      padding: 9px 16px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-size: 0.84rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
+      background: transparent; color: var(--text-muted); border: 1px solid transparent;
+      padding: 9px 16px; border-radius: 7px; cursor: pointer; font-size: 0.84rem;
+      font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.2s;
     }
+    .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.04); }
+    .tab-btn.active { background: var(--bg-card); color: #fff; border-color: var(--accent-blue); }
+    .tab-btn.active.purple-tab { border-color: var(--accent-purple); }
+    .tab-count { background: rgba(56,189,248,0.16); color: var(--accent-blue); padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; }
+    .tab-btn.purple-tab .tab-count { background: rgba(168,85,247,0.18); color: #d8b4fe; }
 
-    .tab-btn:hover {
-      color: #fff;
-      background-color: rgba(255, 255, 255, 0.04);
-    }
+    .tab-content { display: none; flex-direction: column; gap: 14px; }
+    .tab-content.active { display: flex; }
 
-    .tab-btn.active {
-      background-color: var(--bg-card);
-      color: #fff;
-      border-color: var(--accent-blue);
-      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.15);
-    }
-
-    .tab-btn.active.purple-tab {
-      border-color: var(--accent-purple);
-      box-shadow: 0 2px 8px rgba(168, 85, 247, 0.18);
-    }
-
-    .tab-count {
-      background: rgba(56, 189, 248, 0.16);
-      color: var(--accent-blue);
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-
-    .tab-btn.purple-tab .tab-count {
-      background: rgba(168, 85, 247, 0.18);
-      color: #d8b4fe;
-    }
-
-    .tab-content {
-      display: none;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .tab-content.active {
-      display: flex;
-    }
-
-    /* Barra de Filtros */
+    /* Filtros */
     .filter-bar {
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      display: grid;
-      grid-template-columns: 2fr repeat(4, 1.2fr) auto;
-      gap: 10px;
-      align-items: center;
-      box-shadow: var(--shadow);
+      background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 12px 16px; display: grid; grid-template-columns: 2fr repeat(4, 1.2fr) auto; gap: 10px; align-items: end;
+    }
+    .filter-bar-cd {
+      background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 12px 16px; display: grid; grid-template-columns: 2fr repeat(3, 1.3fr) auto; gap: 10px; align-items: end;
+    }
+    @media (max-width: 1200px) { .filter-bar, .filter-bar-cd { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) { .filter-bar, .filter-bar-cd { grid-template-columns: 1fr; } }
+
+    .filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .filter-group label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+    .filter-control {
+      background: #0b1120; border: 1px solid var(--border-color); color: var(--text-main);
+      padding: 7px 10px; border-radius: 6px; font-size: 0.82rem; outline: none; width: 100%;
+    }
+    .filter-control:focus { border-color: var(--accent-blue); }
+    .btn-reset {
+      background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5;
+      padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600;
+      height: 35px; display: flex; align-items: center; gap: 5px;
     }
 
-    .filter-bar-cd {
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--
+    /* KPIs */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; }
+    .kpi-card {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 5px; position: relative; overflow: hidden;
+    }
+    .kpi-card.clickable { cursor: pointer; }
+    .kpi-card.clickable:hover { border-color: var(--accent-purple); }
+    .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+    .kpi-card.blue::after { background: var(--accent-blue); }
+    .kpi-card.green::after { background: var(--accent-green); }
+    .kpi-card.yellow::after { background: var(--accent-yellow); }
+    .kpi-card.red::after { background: var(--accent-red); }
+    .kpi-card.purple::after { background: var(--accent-purple); }
+    .kpi-card.cyan::after { background: var(--accent-cyan); }
+    .kpi-card.indigo::after { background: var(--accent-indigo); }
+
+    .kpi-header { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.73rem; font-weight: 600; text-transform: uppercase; }
+    .kpi-value { font-size: 1.6rem; font-weight: 800; color: #fff; }
+    .kpi-value.money { font-size: 1.32rem; }
+    .kpi-subtext { font-size: 0.72rem; color: var(--text-muted); }
+
+    /* Gráficos */
+    .charts-grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .charts-grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media (max-width: 1300px) { .charts-grid-6 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 850px) { .charts-grid-6, .charts-grid-4 { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 16px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .chart-card h3 { font-size: 0.88rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .chart-container { position: relative; width: 100%; height: 235px; }
+
+    /* Tabelas */
+    .table-section {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .table-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .table-toolbar h3 { font-size: 0.94rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .table-responsive { overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px; max-height: 480px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.82rem; }
+    thead th {
+      background: #0f1629; color: var(--text-muted); padding: 10px 12px; font-weight: 700;
+      text-transform: uppercase; font-size: 0.7rem; border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 0; z-index: 2; white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid rgba(51, 65, 85, 0.35); }
+    tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+    tbody td { padding: 10px 12px; color: #e2e8f0; vertical-align: middle; }
+
+    .badge { display: inline-block; padding: 3px 7px; border-radius: 5px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
+    .badge-concluido { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge-andamento { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+    .badge-aguardando { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .badge-cancelado { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .badge-purple { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+    .badge-default { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+    footer { text-align: center; color: var(--text-muted); font-size: 0.75rem; padding: 6px 0; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    <header>
+      <div class="header-title">
+        <h1><i class="fa-solid fa-chart-column" style="color: var(--accent-blue)"></i> Central de Licitações | Exercício 2026</h1>
+        <p>Prefeitura Municipal de Timóteo • Painel Executivo Integrado (Licitações & Compras Diretas)</p>
+      </div>
+      <div class="header-actions">
+        <div class="live-badge"><div class="pulse-dot"></div> Conexão Google Sheets</div>
+        <button class="btn-action" onclick="carregarTudo()"><i class="fa-solid fa-arrows-rotate"></i> Atualizar</button>
+      </div>
+    </header>
+
+    <nav class="nav-tabs">
+      <button id="tabBtnProcessos" class="tab-btn active" onclick="alternarAba('processos')">
+        <i class="fa-solid fa-gavel" style="color: var(--accent-blue)"></i> Processos Licitatórios
+        <span id="badgeCountProcessos" class="tab-count">--</span>
+      </button>
+      <button id="tabBtnCompraDireta" class="tab-btn purple-tab" onclick="alternarAba('compra-direta')">
+        <i class="fa-solid fa-bag-shopping" style="color: var(--accent-purple)"></i> Compras Diretas
+        <span id="badgeCountCD" class="tab-count">--</span>
+      </button>
+    </nav>
+
+    <!-- ABA 1: PROCESSOS LICITATÓRIOS -->
+    <section id="aba-processos" class="tab-content active">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Buscar por Objeto</label>
+          <input type="text" id="filtroTexto" class="filter-control" placeholder="Buscar objeto..." oninput="aplicarFiltros()">
+        </div>
+        <div class="filter-group">
+          <label>Secretaria</label>
+          <select id="filtroSecretaria" class="filter-control" onchange="aplicarFiltros()"><option value="">Todas as Secretarias</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Modalidade</label>
+          <select id="filtroModalidade" class="filter-control" onchange="aplicarFiltros()"><option value="">Todas as Modalidades</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Responsável</label>
+          <select id="filtroResponsavel" class="filter-control" onchange="aplicarFiltros()"><option value="">Todos os Responsáveis</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Status</label>
+          <select id="filtroStatus" class="filter-control" onchange="aplicarFiltros()">
+            <option value="">Todos os Status</option>
+            <option value="CONCLUIDO">Concluído</option>
+            <option value="EM ANDAMENTO">Em Andamento</option>
+            <option value="AGUARDANDO">Aguardando</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+        </div>
+        <button class="btn-reset" onclick="limparFiltros()"><i class="fa-solid fa-filter-circle-xmark"></i> Limpar</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card blue"><div class="kpi-header"><span>Total de Processos</span><i class="fa-solid fa-folder-tree"></i></div><div class="kpi-value" id="kpi-total">--</div><div class="kpi-subtext" id="kpi-total-sub">Processos cadastrados</div></div>
+        <div class="kpi-card green"><div class="kpi-header"><span>Concluídos</span><i class="fa-solid fa-circle-check"></i></div><div class="kpi-value" id="kpi-concluidos">--</div><div class="kpi-subtext" id="kpi-concluidos-pct">--% de eficácia</div></div>
+        <div class="kpi-card yellow"><div class="kpi-header"><span>Em Andamento</span><i class="fa-solid fa-clock-rotate-left"></i></div><div class="kpi-value" id="kpi-andamento">--</div><div class="kpi-subtext" id="kpi-andamento-pct">--% em tramitação</div></div>
+        <div class="kpi-card red"><div class="kpi-header"><span>Cancelados / Ajustes</span><i class="fa-solid fa-circle-xmark"></i></div><div class="kpi-value" id="kpi-cancelados">--</div><div class="kpi-subtext" id="kpi-cancelados-pct">--% cancelados</div></div>
+        <div class="kpi-card cyan"><div class="kpi-header"><span>Tempo Médio Tramitação</span><i class="fa-solid fa-stopwatch"></i></div><div class="kpi-value" id="kpi-tempo-medio">--</div><div class="kpi-subtext" id="kpi-tempo-sub">Dias corridos</div></div>
+        <div class="kpi-card purple clickable" onclick="alternarAba('compra-direta')" title="Abrir aba Compras Diretas">
+          <div class="kpi-header"><span>Compras Diretas ↗</span><i class="fa-solid fa-bag-shopping"></i></div>
+          <div class="kpi-value" id="kpi-cd-resumo-qtd">--</div>
+          <div class="kpi-subtext" id="kpi-cd-resumo-valor">Carregando...</div>
+        </div>
+      </div>
+
+      <div class="charts-grid-6">
+        <div class="chart-card"><h3>1. Distribuição por Modalidade</h3><div class="chart-container"><canvas id="chartModalidades"></canvas></div></div>
+        <div class="chart-card"><h3>2. Status do Ciclo de Vida</h3><div class="chart-container"><canvas id="chartStatus"></canvas></div></div>
+        <div class="chart-card"><h3>3. Carga por Responsável</h3><div class="chart-container"><canvas id="chartResponsaveis"></canvas></div></div>
+        <div class="chart-card"><h3>4. Demandas por Secretaria</h3><div class="chart-container"><canvas id="chartSecretarias"></canvas></div></div>
+        <div class="chart-card"><h3>5. Registro de Preços (SRP)</h3><div class="chart-container"><canvas id="chartSRP"></canvas></div></div>
+        <div class="chart-card"><h3>6. Média de Dias por Responsável</h3><div class="chart-container"><canvas id="chartTempoResp"></canvas></div></div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-toolbar">
+          <h3>Monitoramento Detalhado dos Processos</h3>
+          <span id="contadorItens" style="font-size: 0.78rem; color: var(--text-muted);">Carregando...</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>Objeto</th><th>Modalidade</th><th>Secretaria</th><th>Responsável</th><th>Status</th><th style="text-align:center;">Tempo</th><th>Observação</th></tr></thead>
+            <tbody id="tabelaProcessosBody"><tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">Carregando planilha...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 2: COMPRAS DIRETAS (gid=1336277070) -->
+    <section id="aba-compra-direta" class="tab-content">
+      <div class="filter-bar-cd">
+        <div class="filter-group">
+          <label>Buscar Objeto, Fornecedor ou Nº</label>
+          <input type="text" id="cdFiltroTexto" class="filter-control" placeholder="Buscar por objeto, empresa, número..." oninput="aplicarFiltrosCD()">
+        </div>
+        <div class="filter-group">
+          <label>Secretaria</label>
+          <select id="cdFiltroSecretaria" class="filter-control" onchange="aplicarFiltrosCD()"><option value
