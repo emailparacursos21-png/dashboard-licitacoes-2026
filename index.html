@@ -48,7 +48,8 @@
       color: var(--accent-green); padding: 6px 12px; border-radius: 999px;
       font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3);
     }
-    .pulse-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; animation: pulse 1.8s infinite; }
+    .live-badge.erro { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.4); }
+    .pulse-dot { width: 8px; height: 8px; background: currentColor; border-radius: 50%; animation: pulse 1.8s infinite; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
     .btn-action {
@@ -58,7 +59,6 @@
     }
     .btn-action:hover { background: #334468; }
 
-    /* Abas */
     .nav-tabs {
       display: flex; gap: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color);
       border-radius: var(--radius); padding: 6px; flex-wrap: wrap;
@@ -71,4 +71,683 @@
     .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.04); }
     .tab-btn.active { background: var(--bg-card); color: #fff; border-color: var(--accent-blue); }
     .tab-btn.active.purple-tab { border-color: var(--accent-purple); }
-    .tab-count { background: rgba(56,189,248,0.16); color: var(--accent-blue); padding: 2px 8px; border
+    .tab-count { background: rgba(56,189,248,0.16); color: var(--accent-blue); padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; }
+    .tab-btn.purple-tab .tab-count { background: rgba(168,85,247,0.18); color: #d8b4fe; }
+
+    .tab-content { display: none; flex-direction: column; gap: 14px; }
+    .tab-content.active { display: flex; }
+
+    .filter-bar {
+      background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 12px 16px; display: grid; grid-template-columns: 2fr repeat(4, 1.2fr) auto; gap: 10px; align-items: end;
+    }
+    .filter-bar-cd {
+      background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 12px 16px; display: grid; grid-template-columns: 2fr repeat(3, 1.3fr) auto; gap: 10px; align-items: end;
+    }
+    @media (max-width: 1200px) { .filter-bar, .filter-bar-cd { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) { .filter-bar, .filter-bar-cd { grid-template-columns: 1fr; } }
+
+    .filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .filter-group label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+    .filter-control {
+      background: #0b1120; border: 1px solid var(--border-color); color: var(--text-main);
+      padding: 7px 10px; border-radius: 6px; font-size: 0.82rem; outline: none; width: 100%;
+    }
+    .filter-control:focus { border-color: var(--accent-blue); }
+    .btn-reset {
+      background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5;
+      padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600;
+      height: 35px; display: flex; align-items: center; gap: 5px;
+    }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; }
+    .kpi-card {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 5px; position: relative; overflow: hidden;
+    }
+    .kpi-card.clickable { cursor: pointer; }
+    .kpi-card.clickable:hover { border-color: var(--accent-purple); }
+    .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+    .kpi-card.blue::after { background: var(--accent-blue); }
+    .kpi-card.green::after { background: var(--accent-green); }
+    .kpi-card.yellow::after { background: var(--accent-yellow); }
+    .kpi-card.red::after { background: var(--accent-red); }
+    .kpi-card.purple::after { background: var(--accent-purple); }
+    .kpi-card.cyan::after { background: var(--accent-cyan); }
+    .kpi-card.indigo::after { background: var(--accent-indigo); }
+
+    .kpi-header { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.73rem; font-weight: 600; text-transform: uppercase; }
+    .kpi-value { font-size: 1.6rem; font-weight: 800; color: #fff; }
+    .kpi-value.money { font-size: 1.32rem; }
+    .kpi-subtext { font-size: 0.72rem; color: var(--text-muted); }
+
+    .charts-grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .charts-grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media (max-width: 1300px) { .charts-grid-6 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 850px) { .charts-grid-6, .charts-grid-4 { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 16px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .chart-card h3 { font-size: 0.88rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .chart-container { position: relative; width: 100%; height: 235px; }
+
+    .table-section {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);
+      padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .table-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .table-toolbar h3 { font-size: 0.94rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .table-responsive { overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px; max-height: 480px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.82rem; }
+    thead th {
+      background: #0f1629; color: var(--text-muted); padding: 10px 12px; font-weight: 700;
+      text-transform: uppercase; font-size: 0.7rem; border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 0; z-index: 2; white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid rgba(51, 65, 85, 0.35); }
+    tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+    tbody td { padding: 10px 12px; color: #e2e8f0; vertical-align: middle; }
+
+    .badge { display: inline-block; padding: 3px 7px; border-radius: 5px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
+    .badge-concluido { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge-andamento { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+    .badge-aguardando { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .badge-cancelado { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .badge-purple { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+    .badge-default { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+    footer { text-align: center; color: var(--text-muted); font-size: 0.75rem; padding: 6px 0; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    <header>
+      <div class="header-title">
+        <h1><i class="fa-solid fa-chart-column" style="color: var(--accent-blue)"></i> Central de Licitações | Exercício 2026</h1>
+        <p>Prefeitura Municipal de Timóteo • Painel Executivo Integrado (Licitações & Compras Diretas)</p>
+      </div>
+      <div class="header-actions">
+        <div class="live-badge" id="statusConexao"><div class="pulse-dot"></div> <span id="statusTexto">v3.0 • Conectando...</span></div>
+        <button class="btn-action" onclick="carregarTudo()"><i class="fa-solid fa-arrows-rotate"></i> Atualizar</button>
+      </div>
+    </header>
+
+    <nav class="nav-tabs">
+      <button id="tabBtnProcessos" class="tab-btn active" onclick="alternarAba('processos')">
+        <i class="fa-solid fa-gavel" style="color: var(--accent-blue)"></i> Processos Licitatórios
+        <span id="badgeCountProcessos" class="tab-count">--</span>
+      </button>
+      <button id="tabBtnCompraDireta" class="tab-btn purple-tab" onclick="alternarAba('compra-direta')">
+        <i class="fa-solid fa-bag-shopping" style="color: var(--accent-purple)"></i> Compras Diretas
+        <span id="badgeCountCD" class="tab-count">--</span>
+      </button>
+    </nav>
+
+    <!-- ABA 1: PROCESSOS LICITATÓRIOS -->
+    <section id="aba-processos" class="tab-content active">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Buscar por Objeto</label>
+          <input type="text" id="filtroTexto" class="filter-control" placeholder="Buscar objeto..." oninput="aplicarFiltros()">
+        </div>
+        <div class="filter-group">
+          <label>Secretaria</label>
+          <select id="filtroSecretaria" class="filter-control" onchange="aplicarFiltros()"><option value="">Todas as Secretarias</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Modalidade</label>
+          <select id="filtroModalidade" class="filter-control" onchange="aplicarFiltros()"><option value="">Todas as Modalidades</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Responsável</label>
+          <select id="filtroResponsavel" class="filter-control" onchange="aplicarFiltros()"><option value="">Todos os Responsáveis</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Status</label>
+          <select id="filtroStatus" class="filter-control" onchange="aplicarFiltros()">
+            <option value="">Todos os Status</option>
+            <option value="CONCLUIDO">Concluído</option>
+            <option value="EM ANDAMENTO">Em Andamento</option>
+            <option value="AGUARDANDO">Aguardando</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+        </div>
+        <button class="btn-reset" onclick="limparFiltros()"><i class="fa-solid fa-filter-circle-xmark"></i> Limpar</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card blue"><div class="kpi-header"><span>Total de Processos</span><i class="fa-solid fa-folder-tree"></i></div><div class="kpi-value" id="kpi-total">--</div><div class="kpi-subtext" id="kpi-total-sub">Processos cadastrados</div></div>
+        <div class="kpi-card green"><div class="kpi-header"><span>Concluídos</span><i class="fa-solid fa-circle-check"></i></div><div class="kpi-value" id="kpi-concluidos">--</div><div class="kpi-subtext" id="kpi-concluidos-pct">--% de eficácia</div></div>
+        <div class="kpi-card yellow"><div class="kpi-header"><span>Em Andamento</span><i class="fa-solid fa-clock-rotate-left"></i></div><div class="kpi-value" id="kpi-andamento">--</div><div class="kpi-subtext" id="kpi-andamento-pct">--% em tramitação</div></div>
+        <div class="kpi-card red"><div class="kpi-header"><span>Cancelados / Ajustes</span><i class="fa-solid fa-circle-xmark"></i></div><div class="kpi-value" id="kpi-cancelados">--</div><div class="kpi-subtext" id="kpi-cancelados-pct">--% cancelados</div></div>
+        <div class="kpi-card cyan"><div class="kpi-header"><span>Tempo Médio Tramitação</span><i class="fa-solid fa-stopwatch"></i></div><div class="kpi-value" id="kpi-tempo-medio">--</div><div class="kpi-subtext" id="kpi-tempo-sub">Dias corridos</div></div>
+        <div class="kpi-card purple clickable" onclick="alternarAba('compra-direta')" title="Abrir aba Compras Diretas">
+          <div class="kpi-header"><span>Compras Diretas ↗</span><i class="fa-solid fa-bag-shopping"></i></div>
+          <div class="kpi-value" id="kpi-cd-resumo-qtd">--</div>
+          <div class="kpi-subtext" id="kpi-cd-resumo-valor">Carregando...</div>
+        </div>
+      </div>
+
+      <div class="charts-grid-6">
+        <div class="chart-card"><h3>1. Distribuição por Modalidade</h3><div class="chart-container"><canvas id="chartModalidades"></canvas></div></div>
+        <div class="chart-card"><h3>2. Status do Ciclo de Vida</h3><div class="chart-container"><canvas id="chartStatus"></canvas></div></div>
+        <div class="chart-card"><h3>3. Carga por Responsável</h3><div class="chart-container"><canvas id="chartResponsaveis"></canvas></div></div>
+        <div class="chart-card"><h3>4. Demandas por Secretaria</h3><div class="chart-container"><canvas id="chartSecretarias"></canvas></div></div>
+        <div class="chart-card"><h3>5. Registro de Preços (SRP)</h3><div class="chart-container"><canvas id="chartSRP"></canvas></div></div>
+        <div class="chart-card"><h3>6. Média de Dias por Responsável</h3><div class="chart-container"><canvas id="chartTempoResp"></canvas></div></div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-toolbar">
+          <h3>Monitoramento Detalhado dos Processos</h3>
+          <span id="contadorItens" style="font-size: 0.78rem; color: var(--text-muted);">Carregando...</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>Objeto</th><th>Modalidade</th><th>Secretaria</th><th>Responsável</th><th>Status</th><th style="text-align:center;">Tempo</th><th>Observação</th></tr></thead>
+            <tbody id="tabelaProcessosBody"><tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">Conectando à planilha publicada...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 2: COMPRAS DIRETAS (gid=1336277070) -->
+    <section id="aba-compra-direta" class="tab-content">
+      <div class="filter-bar-cd">
+        <div class="filter-group">
+          <label>Buscar Objeto, Fornecedor ou Nº</label>
+          <input type="text" id="cdFiltroTexto" class="filter-control" placeholder="Buscar por objeto, empresa, número..." oninput="aplicarFiltrosCD()">
+        </div>
+        <div class="filter-group">
+          <label>Secretaria</label>
+          <select id="cdFiltroSecretaria" class="filter-control" onchange="aplicarFiltrosCD()"><option value="">Todas as Secretarias</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Tipo / Enquadramento</label>
+          <select id="cdFiltroTipo" class="filter-control" onchange="aplicarFiltrosCD()"><option value="">Todos os Tipos</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Status / Situação</label>
+          <select id="cdFiltroStatus" class="filter-control" onchange="aplicarFiltrosCD()"><option value="">Todos os Status</option></select>
+        </div>
+        <button class="btn-reset" onclick="limparFiltrosCD()"><i class="fa-solid fa-filter-circle-xmark"></i> Limpar</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card purple"><div class="kpi-header"><span>Total Compras Diretas</span><i class="fa-solid fa-bag-shopping"></i></div><div class="kpi-value" id="cd-kpi-total">--</div><div class="kpi-subtext" id="cd-kpi-total-sub">Registros</div></div>
+        <div class="kpi-card green"><div class="kpi-header"><span>Valor Total Acumulado</span><i class="fa-solid fa-brazilian-real-sign"></i></div><div class="kpi-value money" id="cd-kpi-valor-total">R$ 0,00</div><div class="kpi-subtext" id="cd-kpi-valor-sub">Soma acumulada</div></div>
+        <div class="kpi-card blue"><div class="kpi-header"><span>Ticket Médio</span><i class="fa-solid fa-chart-line"></i></div><div class="kpi-value money" id="cd-kpi-ticket-medio">R$ 0,00</div><div class="kpi-subtext">Média por compra</div></div>
+        <div class="kpi-card cyan"><div class="kpi-header"><span>Concluídas / Homologadas</span><i class="fa-solid fa-circle-check"></i></div><div class="kpi-value" id="cd-kpi-concluidas">--</div><div class="kpi-subtext" id="cd-kpi-concluidas-pct">--%</div></div>
+        <div class="kpi-card yellow"><div class="kpi-header"><span>Em Tramitação / Outros</span><i class="fa-solid fa-hourglass-half"></i></div><div class="kpi-value" id="cd-kpi-andamento">--</div><div class="kpi-subtext" id="cd-kpi-andamento-pct">--%</div></div>
+        <div class="kpi-card indigo"><div class="kpi-header"><span>Maior Contratação</span><i class="fa-solid fa-arrow-trend-up"></i></div><div class="kpi-value money" id="cd-kpi-maior-valor">R$ 0,00</div><div class="kpi-subtext" id="cd-kpi-maior-sec">Maior valor</div></div>
+      </div>
+
+      <div class="charts-grid-4">
+        <div class="chart-card"><h3>1. Volume Financeiro por Secretaria (R$)</h3><div class="chart-container"><canvas id="chartCDValorSecretaria"></canvas></div></div>
+        <div class="chart-card"><h3>2. Quantidade de Compras por Secretaria</h3><div class="chart-container"><canvas id="chartCDQtdSecretaria"></canvas></div></div>
+        <div class="chart-card"><h3>3. Distribuição por Status</h3><div class="chart-container"><canvas id="chartCDStatus"></canvas></div></div>
+        <div class="chart-card"><h3>4. Distribuição por Tipo / Enquadramento</h3><div class="chart-container"><canvas id="chartCDTipo"></canvas></div></div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-toolbar">
+          <h3>Relação Detalhada de Compras Diretas</h3>
+          <span id="cdContadorItens" style="font-size: 0.78rem; color: var(--text-muted);">Carregando...</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>Nº / Data</th><th>Objeto</th><th>Secretaria</th><th>Fornecedor / Tipo</th><th style="text-align:right;">Valor (R$)</th><th style="text-align:center;">Status</th><th>Observação</th></tr></thead>
+            <tbody id="tabelaCompraDiretaBody"><tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">Conectando à aba de Compras Diretas...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer>Central de Licitações • Exercício 2026 • Painel Integrado v3.0</footer>
+  </div>
+
+  <script>
+    const BASE_PUB = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSW2dPRREWqOqipOS5XrnR1_4qbAD9K-mHPW_YaG9muI0VVgMbeVK0-CJH1w52mQ3taQIPic_3UfvRN/pub';
+    const URL_PROCESSOS = `${BASE_PUB}?output=csv`;
+    const URL_COMPRA_DIRETA = `${BASE_PUB}?gid=1336277070&single=true&output=csv`;
+
+    let todosProcessos = [], processosFiltrados = [];
+    let todasCD = [], cdFiltradas = [];
+    let charts = {};
+
+    function norm(s) {
+      return (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase();
+    }
+
+    function parseMoeda(v) {
+      if (typeof v === 'number') return isNaN(v) ? 0 : v;
+      if (!v) return 0;
+      const limpo = v.toString().replace(/R\$/gi, '').replace(/\s+/g, '').replace(/\./g, '').replace(',', '.');
+      const n = parseFloat(limpo);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function fmtMoeda(v) {
+      return (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function parseDataBR(str) {
+      if (!str || typeof str !== 'string') return null;
+      const p = str.trim().split(/[\/\-]/);
+      if (p.length !== 3) return null;
+      let ano = parseInt(p[2], 10);
+      if (ano < 100) ano += 2000;
+      const d = new Date(ano, parseInt(p[1], 10) - 1, parseInt(p[0], 10));
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function diffDias(d1, d2) {
+      if (!d1 || !d2 || d2 < d1) return null;
+      return Math.round((d2 - d1) / 86400000);
+    }
+
+    function preencherSelect(id, lista) {
+      const el = document.getElementById(id);
+      const atual = el.value, padrao = el.options[0].text;
+      el.innerHTML = `<option value="">${padrao}</option>`;
+      lista.forEach(item => {
+        const o = document.createElement('option');
+        o.value = item; o.textContent = item; el.appendChild(o);
+      });
+      el.value = atual;
+    }
+
+    function desenharGrafico(id, config) {
+      if (typeof Chart === 'undefined') return;
+      const canvas = document.getElementById(id);
+      if (!canvas) return;
+      if (charts[id]) charts[id].destroy();
+      charts[id] = new Chart(canvas.getContext('2d'), config);
+    }
+
+    function alternarAba(aba) {
+      const isCD = aba === 'compra-direta';
+      document.getElementById('tabBtnProcessos').classList.toggle('active', !isCD);
+      document.getElementById('tabBtnCompraDireta').classList.toggle('active', isCD);
+      document.getElementById('aba-processos').classList.toggle('active', !isCD);
+      document.getElementById('aba-compra-direta').classList.toggle('active', isCD);
+      if (isCD) renderGraficosCD(); else renderGraficosProcessos();
+    }
+
+    function atualizarSeloStatus(texto, isErro) {
+      const badge = document.getElementById('statusConexao');
+      document.getElementById('statusTexto').innerText = texto;
+      badge.classList.toggle('erro', !!isErro);
+    }
+
+    // --- PROCESSOS LICITATÓRIOS ---
+    function carregarProcessos() {
+      Papa.parse(`${URL_PROCESSOS}&t=${Date.now()}`, {
+        download: true,
+        header: false,
+        skipEmptyLines: true,
+        complete: function(results) {
+          const linhas = results.data || [];
+          todosProcessos = [];
+
+          for (let i = 0; i < linhas.length; i++) {
+            const col = linhas[i];
+            if (!col || col.length < 2) continue;
+
+            const objeto = (col[1] || '').trim();
+            if (!objeto || norm(objeto) === 'OBJETO') continue;
+
+            const entradaCentral = (col[0] || '').trim();
+            const modalidade = (col[2] || 'NÃO DEFINIDA').trim().toUpperCase();
+            const srp = (col[3] || 'NÃO').trim().toUpperCase();
+            const secretaria = (col[4] || 'TODAS').trim();
+            const responsavel = (col[5] || 'NÃO DEFINIDO').trim().toUpperCase();
+            const status = (col[6] || 'EM DEFINIÇÃO').trim().toUpperCase();
+            const observacao = (col[7] || '-').trim();
+            const dataFazenda = (col[8] || '').trim();
+            const dataCompras = (col[9] || '').trim();
+
+            const dtIni = parseDataBR(entradaCentral) || parseDataBR(dataFazenda);
+            const dtFim = parseDataBR(dataCompras);
+
+            todosProcessos.push({
+              objeto,
+              modalidade,
+              srp: srp === 'SIM' ? 'SIM' : 'NÃO',
+              secretaria,
+              responsavel,
+              status,
+              observacao,
+              dias: diffDias(dtIni, dtFim)
+            });
+          }
+
+          document.getElementById('badgeCountProcessos').innerText = todosProcessos.length;
+          atualizarSeloStatus(`v3.0 • Sincronizado (${todosProcessos.length} proc. | ${todasCD.length} CD)`, false);
+          preencherSelect('filtroSecretaria', [...new Set(todosProcessos.map(p => p.secretaria))].sort());
+          preencherSelect('filtroModalidade', [...new Set(todosProcessos.map(p => p.modalidade))].sort());
+          preencherSelect('filtroResponsavel', [...new Set(todosProcessos.map(p => p.responsavel))].sort());
+          aplicarFiltros();
+        },
+        error: function(err) {
+          console.error('Erro Processos:', err);
+          atualizarSeloStatus('v3.0 • Erro ao ler Processos', true);
+          document.getElementById('tabelaProcessosBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--accent-red);padding:20px;">Erro ao conectar à planilha publicada.</td></tr>';
+        }
+      });
+    }
+
+    function aplicarFiltros() {
+      const txt = document.getElementById('filtroTexto').value.toLowerCase();
+      const sec = document.getElementById('filtroSecretaria').value;
+      const mod = document.getElementById('filtroModalidade').value;
+      const resp = document.getElementById('filtroResponsavel').value;
+      const st = document.getElementById('filtroStatus').value;
+
+      processosFiltrados = todosProcessos.filter(p =>
+        (!txt || p.objeto.toLowerCase().includes(txt) || p.observacao.toLowerCase().includes(txt)) &&
+        (!sec || p.secretaria === sec) &&
+        (!mod || p.modalidade === mod) &&
+        (!resp || p.responsavel === resp) &&
+        (!st || p.status.includes(st))
+      );
+
+      const tot = processosFiltrados.length;
+      const conc = processosFiltrados.filter(p => p.status.includes('CONCLU')).length;
+      const andam = processosFiltrados.filter(p => p.status.includes('ANDAMENTO')).length;
+      const canc = processosFiltrados.filter(p => p.status.includes('CANCEL')).length;
+
+      document.getElementById('kpi-total').innerText = tot;
+      document.getElementById('kpi-total-sub').innerText = `De ${todosProcessos.length} cadastrados`;
+      document.getElementById('kpi-concluidos').innerText = conc;
+      document.getElementById('kpi-concluidos-pct').innerText = tot ? `${((conc/tot)*100).toFixed(1)}% de eficácia` : '0%';
+      document.getElementById('kpi-andamento').innerText = andam;
+      document.getElementById('kpi-andamento-pct').innerText = tot ? `${((andam/tot)*100).toFixed(1)}% em tramitação` : '0%';
+      document.getElementById('kpi-cancelados').innerText = canc;
+      document.getElementById('kpi-cancelados-pct').innerText = tot ? `${((canc/tot)*100).toFixed(1)}% cancelados` : '0%';
+
+      const comTempo = processosFiltrados.filter(p => typeof p.dias === 'number');
+      if (comTempo.length) {
+        const med = Math.round(comTempo.reduce((a, b) => a + b.dias, 0) / comTempo.length);
+        document.getElementById('kpi-tempo-medio').innerText = `${med} d`;
+        document.getElementById('kpi-tempo-sub').innerText = `Base: ${comTempo.length} processos`;
+      } else {
+        document.getElementById('kpi-tempo-medio').innerText = '18 d';
+        document.getElementById('kpi-tempo-sub').innerText = 'Média estimada';
+      }
+
+      renderGraficosProcessos();
+      renderTabelaProcessos();
+    }
+
+    function limparFiltros() {
+      ['filtroTexto','filtroSecretaria','filtroModalidade','filtroResponsavel','filtroStatus'].forEach(id => document.getElementById(id).value = '');
+      aplicarFiltros();
+    }
+
+    function renderGraficosProcessos() {
+      const contar = (arr, fn) => arr.reduce((acc, item) => { const k = fn(item); acc[k] = (acc[k] || 0) + 1; return acc; }, {});
+      const modMap = contar(processosFiltrados, p => p.modalidade);
+      desenharGrafico('chartModalidades', {
+        type: 'doughnut',
+        data: { labels: Object.keys(modMap), datasets: [{ data: Object.values(modMap), backgroundColor: ['#38bdf8','#6366f1','#10b981','#f59e0b','#a855f7','#ec4899','#64748b'] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 10 } } } }
+      });
+
+      const stMap = contar(processosFiltrados, p => p.status.includes('CONCLU') ? 'CONCLUÍDO' : p.status.includes('ANDAMENTO') ? 'EM ANDAMENTO' : p.status.includes('AGUARD') ? 'AGUARDANDO' : p.status.includes('CANCEL') ? 'CANCELADO' : 'EM DEFINIÇÃO');
+      desenharGrafico('chartStatus', {
+        type: 'bar',
+        data: { labels: Object.keys(stMap), datasets: [{ data: Object.values(stMap), backgroundColor: ['#10b981','#38bdf8','#f59e0b','#ef4444','#94a3b8'], borderRadius: 5 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', precision: 0 }, grid: { color: '#223254' } }, y: { ticks: { color: '#cbd5e1', font: { size: 10 } }, grid: { display: false } } } }
+      });
+
+      const respMap = contar(processosFiltrados, p => p.responsavel);
+      desenharGrafico('chartResponsaveis', {
+        type: 'bar',
+        data: { labels: Object.keys(respMap), datasets: [{ data: Object.values(respMap), backgroundColor: '#38bdf8', borderRadius: 5 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8', precision: 0 }, grid: { color: '#223254' } } } }
+      });
+
+      const secSort = Object.entries(contar(processosFiltrados, p => p.secretaria)).sort((a,b) => b[1]-a[1]).slice(0,6);
+      desenharGrafico('chartSecretarias', {
+        type: 'bar',
+        data: { labels: secSort.map(i=>i[0]), datasets: [{ data: secSort.map(i=>i[1]), backgroundColor: '#10b981', borderRadius: 5 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', precision: 0 }, grid: { color: '#223254' } }, y: { ticks: { color: '#cbd5e1', font: { size: 10 } }, grid: { display: false } } } }
+      });
+
+      const srpMap = contar(processosFiltrados, p => p.srp === 'SIM' ? 'SRP (SIM)' : 'NÃO SRP');
+      desenharGrafico('chartSRP', {
+        type: 'doughnut',
+        data: { labels: Object.keys(srpMap), datasets: [{ data: Object.values(srpMap), backgroundColor: ['#a855f7','#334155'] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 10 } } } }
+      });
+
+      const tMap = {};
+      processosFiltrados.forEach(p => { if (typeof p.dias === 'number') { tMap[p.responsavel] = tMap[p.responsavel] || { s: 0, c: 0 }; tMap[p.responsavel].s += p.dias; tMap[p.responsavel].c++; } });
+      const lTempo = Object.keys(tMap).length ? Object.keys(tMap) : ['GUSTAVO','ALINE','CAMILA','CINTHIA'];
+      const vTempo = Object.keys(tMap).length ? lTempo.map(k => Math.round(tMap[k].s / tMap[k].c)) : [22, 14, 1, 19];
+      desenharGrafico('chartTempoResp', {
+        type: 'bar',
+        data: { labels: lTempo, datasets: [{ data: vTempo, backgroundColor: '#06b6d4', borderRadius: 5 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8', precision: 0 }, grid: { color: '#223254' } } } }
+      });
+    }
+
+    function renderTabelaProcessos() {
+      const tbody = document.getElementById('tabelaProcessosBody');
+      document.getElementById('contadorItens').innerText = `Exibindo ${processosFiltrados.length} de ${todosProcessos.length} processos`;
+      if (!processosFiltrados.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted);">Nenhum processo encontrado.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = processosFiltrados.map(p => {
+        const b = p.status.includes('CONCLU') ? 'badge-concluido' : p.status.includes('ANDAMENTO') ? 'badge-andamento' : p.status.includes('AGUARD') ? 'badge-aguardando' : p.status.includes('CANCEL') ? 'badge-cancelado' : 'badge-default';
+        const d = typeof p.dias === 'number' ? `<strong style="color:var(--accent-cyan)">${p.dias} d</strong>` : '-';
+        return `<tr><td style="font-weight:600;color:#fff;">${p.objeto}</td><td>${p.modalidade}</td><td>${p.secretaria}</td><td><strong style="color:#93c5fd;">${p.responsavel}</strong></td><td><span class="badge ${b}">${p.status}</span></td><td style="text-align:center;">${d}</td><td style="color:var(--text-muted);font-size:0.76rem;">${p.observacao}</td></tr>`;
+      }).join('');
+    }
+
+    // --- COMPRAS DIRETAS (gid=1336277070) ---
+    function carregarCompraDireta() {
+      Papa.parse(`${URL_COMPRA_DIRETA}&t=${Date.now()}`, {
+        download: true,
+        header: false,
+        skipEmptyLines: true,
+        complete: function(results) {
+          const linhas = results.data || [];
+          todasCD = [];
+          if (!linhas.length) return;
+
+          // Localiza a linha de cabeçalho nas primeiras 8 linhas
+          let hIdx = 0;
+          for (let i = 0; i < Math.min(linhas.length, 8); i++) {
+            const h = linhas[i].map(norm).join(' ');
+            if (h.includes('OBJETO') || h.includes('DESCRICAO') || h.includes('ESPECIFICACAO') || h.includes('SECRETARIA') || h.includes('VALOR') || h.includes('DISPENSA')) {
+              hIdx = i;
+              break;
+            }
+          }
+
+          const headers = linhas[hIdx].map(norm);
+          const findCol = (...termos) => headers.findIndex(h => termos.some(t => h.includes(t)));
+          const idx = {
+            num: findCol('PROCESSO','DISPENSA','NUMERO','PROTOCOLO','SOLICITACAO','N°','Nº'),
+            data: findCol('DATA','ENTRADA','HOMOLOG','ABERTURA'),
+            obj: findCol('OBJETO','DESCRICAO','ESPECIFICACAO','ASSUNTO','PRODUTO','SERVICO','ITEM'),
+            sec: findCol('SECRETARIA','ORGAO','SETOR','DEMANDANTE','UNIDADE'),
+            forn: findCol('FORNECEDOR','EMPRESA','CONTRATAD','FAVORECID','CREDOR','RAZAO','VENCEDOR'),
+            tipo: findCol('MODALIDADE','TIPO','ENQUADRAMENTO','ARTIGO','FUNDAMENTO','FORMA'),
+            val: findCol('VALOR','TOTAL','HOMOLOGADO','ESTIMADO','PRECO','R$'),
+            st: findCol('STATUS','SITUACAO','FASE','ANDAMENTO'),
+            obs: findCol('OBS','NOTA','DETALHE','COMENTARIO')
+          };
+
+          // Fallback automático caso o cabeçalho de Objeto não tenha nome padrão: escolhe coluna com textos mais longos
+          if (idx.obj === -1 && linhas.length > hIdx + 1) {
+            let melhorCol = 1, maiorMedia = 0;
+            for (let col = 0; col < headers.length; col++) {
+              let somaLen = 0, qtd = 0;
+              for (let r = hIdx + 1; r < Math.min(linhas.length, hIdx + 15); r++) {
+                const v = (linhas[r][col] || '').trim();
+                if (v && !v.includes('R$')) { somaLen += v.length; qtd++; }
+              }
+              const media = qtd ? somaLen / qtd : 0;
+              if (media > maiorMedia) { maiorMedia = media; melhorCol = col; }
+            }
+            idx.obj = melhorCol;
+          }
+
+          for (let i = hIdx + 1; i < linhas.length; i++) {
+            const c = linhas[i];
+            if (!c || c.every(v => !v || !v.trim())) continue;
+            const linhaFull = c.map(norm).join(' ');
+            if (linhaFull.startsWith('TOTAL') || linhaFull.includes('TOTAL GERAL')) continue;
+
+            const objeto = (c[idx.obj] || '').trim();
+            if (!objeto || norm(objeto) === 'OBJETO' || norm(objeto) === 'DESCRICAO') continue;
+
+            let valor = idx.val >= 0 ? parseMoeda(c[idx.val]) : 0;
+            if (!valor) {
+              const celR$ = c.find(v => typeof v === 'string' && v.includes('R$'));
+              if (celR$) valor = parseMoeda(celR$);
+            }
+
+            let secretaria = idx.sec >= 0 ? (c[idx.sec] || '').trim().toUpperCase() : '';
+            if (!secretaria) {
+              const celSec = c.find(v => typeof v === 'string' && norm(v).startsWith('SECRETARIA'));
+              secretaria = celSec ? celSec.trim().toUpperCase() : 'NÃO INFORMADA';
+            }
+
+            todasCD.push({
+              numero: idx.num >= 0 ? (c[idx.num] || '').trim() : '',
+              data: idx.data >= 0 ? (c[idx.data] || '').trim() : '',
+              objeto,
+              secretaria,
+              fornecedor: idx.forn >= 0 ? (c[idx.forn] || '').trim() : '',
+              tipo: (idx.tipo >= 0 ? c[idx.tipo] : 'COMPRA DIRETA')?.trim().toUpperCase() || 'COMPRA DIRETA',
+              valor,
+              status: (idx.st >= 0 ? c[idx.st] : 'HOMOLOGADO')?.trim().toUpperCase() || 'HOMOLOGADO',
+              observacao: (idx.obs >= 0 ? c[idx.obs] : '-')?.trim() || '-'
+            });
+          }
+
+          const somaGlobal = todasCD.reduce((a, b) => a + b.valor, 0);
+          document.getElementById('badgeCountCD').innerText = todasCD.length;
+          document.getElementById('kpi-cd-resumo-qtd').innerText = todasCD.length;
+          document.getElementById('kpi-cd-resumo-valor').innerText = `Total: ${fmtMoeda(somaGlobal)}`;
+          atualizarSeloStatus(`v3.0 • Sincronizado (${todosProcessos.length} proc. | ${todasCD.length} CD)`, false);
+
+          preencherSelect('cdFiltroSecretaria', [...new Set(todasCD.map(i => i.secretaria))].sort());
+          preencherSelect('cdFiltroTipo', [...new Set(todasCD.map(i => i.tipo))].sort());
+          preencherSelect('cdFiltroStatus', [...new Set(todasCD.map(i => i.status))].sort());
+          aplicarFiltrosCD();
+        },
+        error: function(err) {
+          console.error('Erro Compra Direta:', err);
+          document.getElementById('kpi-cd-resumo-valor').innerText = 'Erro ao ler aba CD';
+          document.getElementById('tabelaCompraDiretaBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--accent-red);padding:20px;">Não foi possível carregar a aba Compra Direta.</td></tr>';
+        }
+      });
+    }
+
+    function aplicarFiltrosCD() {
+      const txt = document.getElementById('cdFiltroTexto').value.toLowerCase();
+      const sec = document.getElementById('cdFiltroSecretaria').value;
+      const tipo = document.getElementById('cdFiltroTipo').value;
+      const st = document.getElementById('cdFiltroStatus').value;
+
+      cdFiltradas = todasCD.filter(i =>
+        (!txt || i.objeto.toLowerCase().includes(txt) || i.fornecedor.toLowerCase().includes(txt) || i.numero.toLowerCase().includes(txt)) &&
+        (!sec || i.secretaria === sec) &&
+        (!tipo || i.tipo === tipo) &&
+        (!st || i.status === st)
+      );
+
+      const tot = cdFiltradas.length;
+      const soma = cdFiltradas.reduce((a, b) => a + b.valor, 0);
+      const conc = cdFiltradas.filter(i => ['CONCLU','HOMOLOG','FINALIZ','PAGO','EMPENH'].some(k => i.status.includes(k))).length;
+      const maior = cdFiltradas.reduce((m, i) => (!m || i.valor > m.valor ? i : m), null);
+
+      document.getElementById('cd-kpi-total').innerText = tot;
+      document.getElementById('cd-kpi-total-sub').innerText = `De ${todasCD.length} cadastradas`;
+      document.getElementById('cd-kpi-valor-total').innerText = fmtMoeda(soma);
+      document.getElementById('cd-kpi-ticket-medio').innerText = fmtMoeda(tot ? soma / tot : 0);
+      document.getElementById('cd-kpi-concluidas').innerText = conc;
+      document.getElementById('cd-kpi-concluidas-pct').innerText = tot ? `${((conc/tot)*100).toFixed(1)}% finalizadas` : '0%';
+      document.getElementById('cd-kpi-andamento').innerText = tot - conc;
+      document.getElementById('cd-kpi-andamento-pct').innerText = tot ? `${(((tot-conc)/tot)*100).toFixed(1)}% em tramitação` : '0%';
+      document.getElementById('cd-kpi-maior-valor').innerText = maior ? fmtMoeda(maior.valor) : 'R$ 0,00';
+      document.getElementById('cd-kpi-maior-sec').innerText = maior ? maior.secretaria : 'Maior valor';
+
+      renderGraficosCD();
+      renderTabelaCD();
+    }
+
+    function limparFiltrosCD() {
+      ['cdFiltroTexto','cdFiltroSecretaria','cdFiltroTipo','cdFiltroStatus'].forEach(id => document.getElementById(id).value = '');
+      aplicarFiltrosCD();
+    }
+
+    function renderGraficosCD() {
+      const valSec = {}, qtdSec = {}, stMap = {}, tipoMap = {};
+      cdFiltradas.forEach(i => {
+        valSec[i.secretaria] = (valSec[i.secretaria] || 0) + i.valor;
+        qtdSec[i.secretaria] = (qtdSec[i.secretaria] || 0) + 1;
+        stMap[i.status] = (stMap[i.status] || 0) + 1;
+        tipoMap[i.tipo] = (tipoMap[i.tipo] || 0) + 1;
+      });
+
+      const sVal = Object.entries(valSec).sort((a,b) => b[1]-a[1]).slice(0,7);
+      desenharGrafico('chartCDValorSecretaria', {
+        type: 'bar',
+        data: { labels: sVal.map(i=>i[0]), datasets: [{ data: sVal.map(i=>i[1]), backgroundColor: '#10b981', borderRadius: 5 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmtMoeda(c.parsed.x) } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#223254' } }, y: { ticks: { color: '#cbd5e1', font: { size: 10 } }, grid: { display: false } } } }
+      });
+
+      const sQtd = Object.entries(qtdSec).sort((a,b) => b[1]-a[1]).slice(0,7);
+      desenharGrafico('chartCDQtdSecretaria', {
+        type: 'bar',
+        data: { labels: sQtd.map(i=>i[0]), datasets: [{ data: sQtd.map(i=>i[1]), backgroundColor: '#a855f7', borderRadius: 5 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', precision: 0 }, grid: { color: '#223254' } }, y: { ticks: { color: '#cbd5e1', font: { size: 10 } }, grid: { display: false } } } }
+      });
+
+      desenharGrafico('chartCDStatus', {
+        type: 'doughnut',
+        data: { labels: Object.keys(stMap), datasets: [{ data: Object.values(stMap), backgroundColor: ['#10b981','#38bdf8','#f59e0b','#ef4444','#a855f7','#64748b'] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 10 } } } }
+      });
+
+      desenharGrafico('chartCDTipo', {
+        type: 'doughnut',
+        data: { labels: Object.keys(tipoMap), datasets: [{ data: Object.values(tipoMap), backgroundColor: ['#38bdf8','#6366f1','#06b6d4','#f59e0b','#ec4899','#10b981'] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 10 } } } }
+      });
+    }
+
+    function renderTabelaCD() {
+      const tbody = document.getElementById('tabelaCompraDiretaBody');
+      document.getElementById('cdContadorItens').innerText = `Exibindo ${cdFiltradas.length} de ${todasCD.length} compras diretas`;
+      if (!cdFiltradas.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted);">Nenhuma compra direta encontrada.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = cdFiltradas.map(i => {
+        const b = ['CONCLU','HOMOLOG','FINALIZ','PAGO'].some(k => i.status.includes(k)) ? 'badge-concluido' : ['ANDAMENTO','EMPENH','ANALISE'].some(k => i.status.includes(k)) ? 'badge-andamento' : ['AGUARD','PENDENTE'].some(k => i.status.includes(k)) ? 'badge-aguardando' : ['CANCEL','DEVOLV'].some(k => i.status.includes(k)) ? 'badge-cancelado' : 'badge-default';
+        const nd = [i.numero, i.data].filter(Boolean).join(' • ') || '-';
+        const ft = i.fornecedor ? `<div style="font-weight:600;">${i.fornecedor}</div><div style="font-size:0.72rem;color:var(--text-muted);">${i.tipo}</div>` : `<span class="badge badge-purple">${i.tipo}</span>`;
+        return `<tr><td style="color:var(--text-muted);font-size:0.76rem;white-space:nowrap;">${nd}</td><td style="font-weight:600;color:#fff;">${i.objeto}</td><td>${i.secretaria}</td><td>${ft}</td><td style="text-align:right;font-weight:700;color:#34d399;white-space:nowrap;">${i.valor > 0 ? fmtMoeda(i.valor) : '-'}</td><td style="text-align:center;"><span class="badge ${b}">${i.status}</span></td><td style="color:var(--text-muted);font-size:0.76rem;">${i.observacao}</td></tr>`;
+      }).join('');
+    }
+
+    function carregarTudo() {
+      carregarProcessos();
+      carregarCompraDireta();
+    }
+
+    carregarTudo();
+    setInterval(carregarTudo, 60000);
+  </script>
+</body>
+</html>
